@@ -44,8 +44,57 @@ const PokemonCard = ({ species }) => {
             }
         }
 
+
+        const getEvolvesTo = async () => {
+            const defaultPokemon = (await axios(species.url)).data
+
+            const currentName = defaultPokemon.name
+            const levelOne = (await axios(defaultPokemon.evolution_chain.url)).data.chain
+
+            let evolutionNames = ''
+
+            if (levelOne.evolves_to.length > 0 && levelOne.evolves_to !== undefined) {
+                if (levelOne.species.name === currentName) {
+                    const levelTwo = Object.entries(levelOne.evolves_to[0])
+                    const pokemonFinded = (await axios(levelTwo[3][1].url)).data
+                    evolutionNames = pokemonFinded.names.filter(n => n.language.name === 'fr')[0].name
+                }
+                
+                if (
+                    levelOne.evolves_to[0].species.name === currentName 
+                    && levelOne.evolves_to[0].evolves_to.length > 0
+                ) {
+                    if (levelOne.evolves_to[0].evolves_to.length > 1) {
+                        const levelTwo = levelOne.evolves_to[0].evolves_to
+                        const arrayNames = await Promise.all(levelTwo.map(
+                            async evolution => {
+                                let pokemonFinded = (await axios(evolution.species.url)).data
+
+                                return pokemonFinded.names.filter(n => n.language.name === 'fr')[0].name
+                            }
+                        ))
+
+                        evolutionNames = arrayNames.join('\nou\n')
+
+                    } else {
+                        const levelThree = Object.entries(levelOne.evolves_to[0].evolves_to[0])
+                        const pokemonFinded = (await axios(levelThree[3][1].url)).data
+                        evolutionNames = pokemonFinded.names.filter(n => n.language.name === 'fr')[0].name
+                    }
+                    
+                }
+            }
+
+            if (evolutionNames !== '') {
+                setEvolvesTo(evolutionNames)
+            } else {
+                setEvolvesTo('-')
+            }
+        }
+
         getPokemon()
         getEvolvesFrom()
+        getEvolvesTo()
     }, [])
 
     return (
@@ -89,12 +138,12 @@ const PokemonCard = ({ species }) => {
             </View>
             <View style={css.pokemonDescription}>
                 <View style={css.pokemonDescriptionContainer}>
-                    <Text style={css.label}>Évolue en</Text>
-                    <Text>{evolvesTo}</Text>
-                </View>
-                <View style={css.pokemonDescriptionContainer}>
                     <Text style={css.label}>Évolution de</Text>
                     <Text>{evolvesFrom}</Text>
+                </View>
+                <View style={css.pokemonDescriptionContainer}>
+                    <Text style={css.label}>Évolue en</Text>
+                    <Text style={css.text}>{evolvesTo}</Text>
                 </View>
             </View>
         </View>
@@ -186,4 +235,8 @@ const css = StyleSheet.create({
         textTransform : 'uppercase',
         fontSize : 10
     },
+
+    text : {
+        textAlign : 'center'
+    }
 });
