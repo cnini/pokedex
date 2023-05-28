@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react"
 import { Image, StyleSheet, Text, View } from "react-native"
 import { getUniqueTypes, getTypeImage } from "../functions"
-import axios from "axios"
-import { API_BASE_URL } from '@env';
+import axios from "axios";
 
 const PokemonCard = ({ species }) => {
     const [pokemonData, setPokemonData] = useState({})
@@ -99,7 +98,6 @@ const PokemonCard = ({ species }) => {
 
     return (
         <View style={css.pokemonCard}>
-            {/* {console.log(pokemonData)} */}
             <View style={css.pokemonCardHeader}>
                 <Text style={css.pokemonNumber}>N° {pokemonData.id}</Text>
                 <View style={css.pokemonTypesContainer}>
