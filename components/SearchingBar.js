@@ -4,7 +4,7 @@ import { View, Text, TextInput, StyleSheet } from "react-native"
 import { usePokedexContext } from "../contexts/PokedexContext"
 
 export const SearchingBar = () => {
-    const { searchingValue, setSearchingValue, setIsUpdated } = usePokedexContext()
+    const { searchingValue, setSearchingValue } = usePokedexContext()
 
     function handlingSearchingBar(value) {
         if (value !== '') {
@@ -13,8 +13,6 @@ export const SearchingBar = () => {
         } else {
             setSearchingValue('')
         }
-
-        setIsUpdated(true)
     }
 
     return (

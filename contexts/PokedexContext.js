@@ -10,7 +10,6 @@ export const PokedexProvider = ({ children }) => {
     const [isRefreshing, setIsRefreshing] = useState(false)
 
     const [searchingValue, setSearchingValue] = useState('')
-    const [isUpdated, setIsUpdated] = useState(false)
 
     useEffect(() => {
         const getAllPokemons = async () => {
@@ -35,12 +34,12 @@ export const PokedexProvider = ({ children }) => {
 
     const filterPokemonList = () => {
         if (searchingValue !== '') {
-            pokemons.filter(
+            return pokemons.filter(
                 async (pokemon) => {
                     const names = ((await axios(pokemon.url)).data.names).map(trans => trans.name)
                     
                     if (names.includes(searchingValue)) {
-                        return [pokemons]
+                        return [pokemon]
                     }
                 }
             )
@@ -48,8 +47,6 @@ export const PokedexProvider = ({ children }) => {
         } else {
             return pokemons
         }
-
-        setIsUpdated(false)
     }
 
     return (
@@ -58,8 +55,7 @@ export const PokedexProvider = ({ children }) => {
                 pokemons,
                 displayMore,
                 searchingValue, setSearchingValue,
-                filterPokemonList,
-                isUpdated, setIsUpdated
+                filterPokemonList
             }
         }>
             { children }
